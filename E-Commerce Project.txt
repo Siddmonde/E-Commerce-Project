@@ -1,0 +1,219 @@
+SELECT * FROM ecom.customer_data;
+
+
+/*
+a. Customer Demographics
+  i.What is the average age of customer in the dataset?
+  */
+  
+  SELECT
+      AVG(YEAR(NOW()) - Year_Birth) AS Average_Age
+  FROM
+     ecom.customer_data;
+     
+     /*
+   ii.How many customers fall into each education level category?
+   */
+   
+   SELECT 
+      Education,COUNT(*) As Count
+   FROM ecom.customer_data
+   GROUP BY Education;
+   
+   /*
+   iii.What is the distribution of marital statuses among the customers?
+   */
+   
+   SELECT
+        Marital_Status,COUNT(*) As Count
+    FROM  ecom.customer_data
+    GROUP BY Marital_Status;
+	
+    /*
+    b. Income and Household Information:
+    
+i. What is the average household income of the customers?
+*/
+
+SELECT
+      AVG(Income) AS Average_Income
+  FROM ecom.customer_data;
+
+/*
+ii. How many customers have children and teenagers in their households?
+*/
+
+SELECT
+   Kidhome,Teenhome, COUNT(*) AS COUNT
+ FROM ecom.customer_data
+ GROUP BY Kidhome,teenhome;
+ 
+ /*
+ c. Purchase Behavior:
+    i. What is the average number of days since the last purchase?
+    */
+    
+    SELECT 
+         AVG(Recency) AS Average_Recency
+    FROM ecom.customer_data;
+
+/*
+ii. How much, on average, do customers spend on each product category?
+*/
+
+SELECT
+ AVG(MntWines) AS Average_Wines,
+ AVG(MntFruits) AS Average_Fruits,
+ AVG(MntMeatProducts) AS Average_MeatProducts,
+ AVG(MntFishProducts) AS Average_FishProducts,
+ AVG(MntSweetProducts) AS Average_SweetProducts,
+ AVG(MntGoldProds) AS Average_GoldProds
+ FROM ecom.customer_data;
+ 
+ /*
+ d. Campaign Response:
+ 
+i. How many customers accepted each campaign offer?
+*/
+SELECT 
+    SUM(AcceptedCmp1) AS Campaign1_Accepted,
+    SUM(AcceptedCmp2) AS Campaign2_Accepted,
+    SUM(AcceptedCmp3) AS Campaign3_Accepted,
+    SUM(AcceptedCmp4) AS Campaign4_Accepted,
+    SUM(AcceptedCmp5) AS Campaign5_Accepted
+ FROM ecom.customer_data;   
+
+/*
+ii. What is the overall response rate for the last campaign?
+ */
+  SELECT 
+     Response,COUNT(*) AS Response_Count
+  FROM ecom.customer_data
+  GROUP BY Response;
+  
+  /*
+e. Online and Offline Purchases:
+
+i. How many purchases are made through the website, catalog, and in-store?
+*/
+SELECT
+  SUM(NumWebPurchases) AS WebsitePurchases_Count,
+  SUM(NumCatalogPurchases) AS CatalogPurchases_Count,
+  SUM(NumStorePurchases) AS StorePurchases_Count
+ FROM ecom.customer_data; 
+
+/*
+ii. What is the average number of web visits per month?
+*/
+SELECT
+    AVG(NumWebVisitsMonth) AS Average_WebVisitsMonth
+FROM ecom.customer_data; 
+
+/*
+f. Complaints and Engagement:
+
+i. How many customers have complained in the last 2 years?
+*/
+SELECT
+   COUNT(*) AS Complain_Count
+  FROM
+   ecom.customer_data
+  WHERE
+   Complain = 1;
+
+/*
+ii. What is the overall engagement rate (accepted any campaign or
+responded) among customers?
+*/
+SELECT
+ (SUM(AcceptedCmp1) + SUM(AcceptedCmp2) + SUM(AcceptedCmp3) + SUM(AcceptedCmp4) + SUM(AcceptedCmp5) +SUM(Response)) AS Total_Engage_Customer
+FROM ecom.customer_data; 
+
+/*
+g. Discounts and Deals:
+
+i. How many deals are made with discounts
+*/
+SELECT
+    SUM(NumDealsPurchases) AS Total_Deals,
+    AVG(NumDealsPurchases) AS Avg_Deals,
+    COUNT(*) AS total_Customer
+   FROM ecom.customer_data; 
+
+/*
+ii. What is the average number of deals and purchases made by customers?
+*/
+SELECT
+    AVG(NumWebPurchases + NumCatalogPurchases + NumStorePurchases)  AS Avg_Total_Purchases
+FROM ecom.customer_data;
+
+/*
+h. Campaign Effectiveness:
+
+i. What is the conversion rate for each campaign?
+*/
+SELECT
+  Campaign,
+  SUM(Response) AS Accepted,
+  COUNT(*) AS Total
+ FROM (
+ SELECT 'Campaign1' AS Campaign, Response FROM ecom.customer_data WHERE AcceptedCmp1 = 1
+ UNION ALL
+ SELECT 'Campaign2' AS Campaign, Response FROM  ecom.customer_data WHERE AcceptedCmp2 = 1
+ UNION ALL
+SELECT 'Campaign3' AS Campaign, Response FROM  ecom.customer_data Where AcceptedCmp3 = 1
+ UNION ALL
+SELECT 'Campaign4' AS Campaign, Response FROM  ecom.customer_data Where AcceptedCmp4 = 1
+ UNION ALL
+SELECT 'Campaign5' AS Campaign, Response FROM  ecom.customer_data Where AcceptedCmp5 = 1
+ UNION ALL
+SELECT 'LastCampaign' AS Campaign, Response FROM  ecom.customer_data Where Response = 1
+ ) AS CampaignData
+GROUP BY Campaign;
+
+
+/*
+ii. Which campaign has the highest acceptance rate?
+*/
+SELECT
+  Campaign,
+  SUM(Response) AS Accepted,
+  COUNT(*) AS Total
+ FROM (
+ SELECT 'Campaign1' AS Campaign, Response FROM ecom.customer_data WHERE AcceptedCmp1 = 1
+ UNION ALL
+ SELECT 'Campaign2' AS Campaign, Response FROM  ecom.customer_data WHERE AcceptedCmp2 = 1
+ UNION ALL
+SELECT 'Campaign3' AS Campaign, Response FROM  ecom.customer_data Where AcceptedCmp3 = 1
+ UNION ALL
+SELECT 'Campaign4' AS Campaign, Response FROM  ecom.customer_data Where AcceptedCmp4 = 1
+ UNION ALL
+SELECT 'Campaign5' AS Campaign, Response FROM  ecom.customer_data Where AcceptedCmp5 = 1
+ UNION ALL
+SELECT 'LastCampaign' AS Campaign, Response FROM  ecom.customer_data Where Response = 1
+ ) AS CampaignData
+GROUP BY Campaign;
+
+/*
+i. Web Engagement and Purchases:
+
+i. What is the correlation between the number of web visits and web
+purchases?
+*/
+SELECT
+   NumWebVisitsMonth, NumWebPurchases
+   FROM 
+      ecom.customer_data;
+      
+      /*
+j. Overall Spending Patterns:
+
+i. What is the overall distribution of spending across all product categories?
+*/
+SELECT
+  SUM(MntWines) As Total_Wine_Spending,
+  SUM(MntFruits) AS Total_Fruits_Spending,
+  SUM(MntSweetProducts) AS Total_Sweets_Spending,
+  SUM(MntGoldProds) AS Total_Gold_Spending
+ FROM
+ ecom.customer_data;
